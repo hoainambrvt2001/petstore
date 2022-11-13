@@ -14,7 +14,7 @@ const Products = ({ products }) => {
                 </div>
                 <div className="product-detail">
                   <span className="product-category">{_el.categories[0].category_name}</span>
-                  <a href={`/product/${_el._id}`} className="product-link">
+                  <a href={`/products/${_el._id}`} className="product-link">
                     <h2>{_el.name}</h2>
                   </a>
                   <span className="price">

@@ -8,9 +8,6 @@ const BlogPost = ({ blogs }) => {
         <h2>Blog Post</h2>
         <p>Best advices for your pet</p>
       </div>
-      {/* <CardPost />
-      <CardPost />
-      <CardPost /> */}
       {blogs.map((blog, index) => (
         <CardPost key={index} blog={blog} />
       ))}
