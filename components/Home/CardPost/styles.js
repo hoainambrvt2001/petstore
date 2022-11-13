@@ -23,6 +23,7 @@ export default css`
     text-align: center;
     border: 1px solid #efefef;
     border-radius: 20px;
+    overflow: hidden;
   }
 
   .card img {
@@ -32,11 +33,22 @@ export default css`
     z-index: -1;
     
   }
+  .card .content{
+    height: 150px;
+    overflow: hidden;
+    h1{
+      color :blue;
+    }
+    p{
+      color: blue;
+    }
+  }
   .card :hover {
     box-shadow: 1px -1px 15px 7px rgba(18, 2, 2, 0.3);
     -webkit-box-shadow: 1px -1px 15px 7px rgba(18, 2, 2, 0.3);
     -moz-box-shadow: 1px -1px 15px 7px rgba(18, 2, 2, 0.3);
   }
+  
   .card .content a :hover{
     background-color: blue;
   }

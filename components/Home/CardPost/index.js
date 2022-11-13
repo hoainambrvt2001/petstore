@@ -2,18 +2,15 @@ import React from 'react'
 import styles from './styles'
 import Image from 'next/image'
 import Link from 'next/link'
-const CardPost = () => {
+const CardPost = ({ key, blog }) => {
   return (
-    <div className="cards">
+    <div className="cards" key={key}>
       <article className="card">
         <img src="/image4.jpg" alt="Hot air balloons"></img>
 
-        <div className="content">
-          <h2>Something</h2>
-          <p>
-            Chế độ dinh dưỡng blah blah
-          </p>
-          <Link href={""}>Read more</Link>
+        <div className="content" id="content">
+          <div dangerouslySetInnerHTML={{ __html: blog.content.split('. ', 1)[0] }} />
+          <Link href={`/blogs/${blog._id}`}>Read more...</Link>
         </div>
       </article>
       <style jsx>{styles}</style>

@@ -11,13 +11,13 @@ import FeaturedProduct from './FeaturedProduct'
 import BlogPost from './BlogPost'
 import Footer from 'components/Footer'
 
-const Home = ({ products }) => {
+const Home = ({ products, blogs }) => {
   return (
     <div className="container">
       <NavBar />
       <Slider />
       <FeaturedProduct trendingProducts={products.trendingProducts}  />
-      <BlogPost />
+      <BlogPost blogs={blogs} />
       <Footer />
       <style jsx>{styles}</style>
     </div>
