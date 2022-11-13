@@ -1,11 +1,11 @@
 import styles from './styles'
 import ProductSingle from './ProductSingle'
-import ProductList from './ProductList'
 import Title from 'components/Product/Utils/Title'
 import { PRODUCT_TYPE } from 'utils/constant'
 import NavBar from 'components/NavBar'
+import ProductCategory from "./ProductCategory";
 
-const Product = ({ productType, productData }) => {
+const Product = ({ productType, productData, categoriesData }) => {
   return (
     <div className="product-wrapper">
       <NavBar />
@@ -13,7 +13,7 @@ const Product = ({ productType, productData }) => {
       {productType === PRODUCT_TYPE.SINGLE ? (
         <ProductSingle isModel={false} productSingleData={productData} />
       ) : (
-        <ProductList />
+        <ProductCategory productData={productData} categoriesData={categoriesData} />
       )}
       <style jsx>{styles}</style>
     </div>
