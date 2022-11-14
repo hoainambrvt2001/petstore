@@ -1,10 +1,15 @@
 import styles from './styles'
-import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
-import {Box, FormControl, InputLabel, MenuItem, Select, Typography} from "@mui/material";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Box, FormControl, InputLabel, MenuItem, Select, Slider, Typography } from "@mui/material";
 import Link from "next/link";
 
-const ProductCategory = ({productData, categoriesData}) => {
+function valuetext(value) {
+  return `${value}°C`;
+}
+
+
+const ProductCategory = ({ productData, categoriesData }) => {
 
   const totalProducts = productData.total;
   const currentPage = productData.page;
@@ -14,16 +19,18 @@ const ProductCategory = ({productData, categoriesData}) => {
   const [products, setProducts] = useState(productData.data);
   const [params, setParams] = useState({});
   const [optionsCategories, setOptionsCategories] = useState(categoriesData.map((element) => {
-    return {value: element._id, label: element.category_name.toString()}
+    return { value: element._id, label: element.category_name.toString() }
   }));
   const [optionsSort, setOptionsSort] = useState(
-      [
-        {value: 'priceAsc', label: 'Order by price: low to high'},
-        {value: 'priceDesc', label: 'Order by price: high to low'}
-      ]
+    [
+      { value: 'priceAsc', label: 'Order by price: low to high' },
+      { value: 'priceDesc', label: 'Order by price: high to low' }
+    ]
   );
-  const [selectSort, setSelectSort] = useState( '');
-  const [selectCategory, setSelectCategory] = useState( '');
+  const [selectSort, setSelectSort] = useState('');
+  const [selectCategory, setSelectCategory] = useState('');
+  const [value1, setValue1] = useState([20, 37]);
+  const minDistance = 10;
 
   useEffect(() => {
     setProducts(productData.data);
@@ -31,147 +38,158 @@ const ProductCategory = ({productData, categoriesData}) => {
 
   useEffect(() => {
     router.push({
-          pathname: '/products',
-          query: params
-        },
-        undefined,
-        { shallow: false },
+      pathname: '/products',
+      query: params
+    },
+      undefined,
+      { shallow: false },
     );
   }, [params]);
 
   function handleNextPage(index) {
-    setParams({...params, page: index});
+    setParams({ ...params, page: index });
   }
 
   function handleSelectSort(event) {
     setSelectSort(event.target.value)
-    setParams({...params, orderBy: event.target.value});
+    setParams({ ...params, orderBy: event.target.value });
   }
 
   function handleSelectCategories(event) {
     setSelectCategory(event.target.value);
-    setParams({...params, categories: event.target.value});
+    setParams({ ...params, categories: event.target.value });
+  }
+
+  function handleChangeFilterPrice(event, newValue, activeThumb) {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (activeThumb === 0) {
+      setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
+    } else {
+      setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
+    }
+  }
+
+  const renderFilterPrice = () => {
+    return (
+      <div>
+        <h3>Filter by price</h3>
+        <Slider
+          getAriaLabel={() => 'Minimum distance'}
+          value={value1}
+          onChange={handleChangeFilterPrice}
+          valueLabelDisplay="auto"
+          getAriaValueText={valuetext}
+          disableSwap
+        />
+          <p>${value1[0]} - ${value1[1]}</p>
+      </div>
+    );
   }
 
   const renderSortCategories = () => {
     return (
-        <div className="product-categories-container">
-          <div className="product-categories-content">
-            <h5>Product Category</h5>
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Category</InputLabel>
-                <Select
-                    labelId="demo-select-small"
-                    id="demo-select-small"
-                    value={selectCategory.value}
-                    label="Category"
-                    onChange={handleSelectCategories}
-                >
-                  {optionsCategories.map((opt, key) =>
-                      <MenuItem value={opt.value} key={key}>{opt.label}</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Box>
-          </div>
-          <style jsx>{styles}</style>
-        </div>
+      <div className="flex-column">
+        <h3>Categories</h3>
+        <FormControl fullWidth size='small'>
+          <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+          <Select
+            labelId="demo-select-small"
+            id="demo-select-small"
+            value={selectCategory.value}
+            label="Category"
+            onChange={handleSelectCategories}
+            sx={{ borderRadius: 40, borderColor: '00000' }}
+          >
+            {optionsCategories.map((opt, key) =>
+              <MenuItem value={opt.value} key={key}>{opt.label}</MenuItem>
+            )}
+          </Select>
+        </FormControl>
+        <style jsx>{styles}</style>
+      </div>
     );
   }
 
   const renderSortProducts = () => {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography>Show {products.length} / {totalProducts} results</Typography>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Order</InputLabel>
-            <Select
-                id="demo-simple-select"
-                value={selectSort.value}
-                label="Order"
-                onChange={handleSelectSort}
-            >
-              {optionsSort.map((opt, key) =>
-                  <MenuItem value={opt.value} key={key}>{opt.label}</MenuItem>
-              )}
-            </Select>
-          </FormControl>
-        </Box>
+      <div className="price-filter-wrapper">
+        <Typography>Showing {products.length} of {totalProducts} results</Typography>
+        <FormControl size='small' sx={{ width: 300 }} >
+          <InputLabel id="demo-simple-select-label">Order by</InputLabel>
+          <Select
+            id="demo-simple-select"
+            value={selectSort.value}
+            label="Order by"
+            onChange={handleSelectSort}
+            sx={{ borderRadius: 40, borderColor: '00000' }}
+          >
+            {optionsSort.map((opt, key) =>
+              <MenuItem value={opt.value} key={key}>{opt.label}</MenuItem>
+            )}
+          </Select>
+        </FormControl>
+        <style jsx>{styles}</style>
+      </div>
     );
   }
 
   const renderProductList = () => {
     return (
-        <div className="product-list">
-          {products.map((product, idx) => (
-              <div className="product-item" key={idx}>
-                <div className="product-img">
-                  <img src={product.images[0].url} alt={product.images[0].name} />
+      <div className="product-list-wrapper">
+        {products.map((product, idx) => (
+            <Link href={`/products/${product._id}`}>
+                <div className="product-card flex-column" key={idx}>
+                    <div className="product-img">
+                        <img src={product.images[0].url} alt={product.images[0].name} />
+                    </div>
+                    <div className="product-detail">
+                        <p className="product-title">{product.name}</p>
+                        <p className="product-price">${product.price}</p>
+                    </div>
                 </div>
-                <div className="product-detail">
-                  <Link href={`/products/${product.id}`}>
-                    <a className="product-link">
-                      <h2>{product.name}</h2>
-                    </a>
-                  </Link>
-                  <span className="price">
-                    {product.price} <span>$</span>{' '}
-                  </span>
-                </div>
-              </div>
-          ))}
-          <style jsx>{styles}</style>
-        </div>
+            </Link>
+
+        ))}
+        <style jsx>{styles}</style>
+      </div>
     );
   }
 
   const renderPagination = () => {
     return (
-        <nav className="woocommerce-pagination">
-          <div className="flex-row">
-            {Array.from(Array(numPages).keys()).map((page, idx) => (
-                <button onClick={() => handleNextPage(page + 1)} key={idx}>
-                  {page + 1 === currentPage ? (
-                      <div className="page-number active">
-                        <span>{page + 1}</span>
-                      </div>
-                  ) : (
-                      <div className="page-number">
-                        <span>{page + 1}</span>
-                      </div>
-                  )}
-                </button>
-            ))}
-          </div>
-          <style jsx>{styles}</style>
-        </nav>
+      <div className="flex-row">
+        {Array.from(Array(numPages).keys()).map((page, idx) => {
+          return page + 1 === currentPage ? (
+            <button onClick={() => handleNextPage(page + 1)} key={idx} className="page-item active">
+              {page + 1}
+            </button>
+          ) : (
+            <button onClick={() => handleNextPage(page + 1)} key={idx} className="page-item">
+              <span>{page + 1}</span>
+            </button>
+          )
+        }
+        )}
+        <style jsx>{styles}</style>
+      </div>
     );
   }
 
-
   return (
     <section className="elementor-section">
-      <div className="background-overlay" />
-      <div className="elementor-container">
-        <div className="elementor-row">
-          <div className="elementor-row-left">
-            <div className="elementor-column-wrap">
-              <div className="elementor-widget-wrap">
-                {renderSortCategories()}
-              </div>
-            </div>
+      <div className="category-container">
+        <div className="flex-row">
+          <div className="side-left category-filter-container">
+            {renderFilterPrice()}
+            {renderSortCategories()}
           </div>
-          <div className="elementor-row-right">
-            <div className="elementor-column">
-              <div className="elementor-column-wrapper">
-                <div className="woocommerce">
-                  {renderSortProducts()}
-                  {renderProductList()}
-                  {renderPagination()}
-                </div>
-              </div>
-            </div>
+          <div className="side-right product-list-container">
+            {renderSortProducts()}
+            {renderProductList()}
+            {renderPagination()}
           </div>
         </div>
       </div>
