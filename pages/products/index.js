@@ -15,14 +15,14 @@ const ProductListPage = ({ productList, queryParams }) => {
     const updateProductSlice = () => {
       dispatch(setProductData(productList))
       dispatch(setQueryParams(queryParams))
-      console.log(queryParams)
-      console.log(productList)
     }
     updateProductSlice()
 
     const fetchCategoriesData = async () => {
       if (productSlice.categories.length === 0) {
-        const categoryList = await axios.get(`http://localhost:3333/categories`).then((res) => res.data)
+        const categoryList = await axios
+          .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`)
+          .then((res) => res.data)
         dispatch(setCategoriesData(categoryList))
       }
     }
@@ -56,7 +56,7 @@ export async function getServerSideProps(context) {
   if (queryParams.maxPrice) options.maxPrice = queryParams.maxPrice
   if (queryParams.minPrice) options.minPrice = queryParams.minPrice
 
-  const productList = await axios.get(`${process.env.HOST_API}/product`, { params: options }).then((res) => res.data)
+  const productList = await axios.get(`${process.env.BACKEND_URL}/product`, { params: options }).then((res) => res.data)
 
   return {
     props: { productList, queryParams },
